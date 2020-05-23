@@ -6,6 +6,7 @@ Provides [`elm-review`](https://package.elm-lang.org/packages/jfmengels/elm-revi
 ## Provided rules
 
 - [`NoMissingSubscriptionsCall`](https://package.elm-lang.org/packages/jfmengels/review-tea/1.0.0/NoMissingSubscriptionsCall) - Forbids exporting everything from a module.
+- [`NoUselessSubscriptions`](https://package.elm-lang.org/packages/jfmengels/review-tea/1.0.0/NoUselessSubscriptions) - Reports `subscriptions` functions that never return a subscription.
 
 
 ## Configuration
@@ -14,10 +15,12 @@ Provides [`elm-review`](https://package.elm-lang.org/packages/jfmengels/elm-revi
 module ReviewConfig exposing (config)
 
 import NoMissingSubscriptionsCall
+import NoUselessSubscriptions
 import Review.Rule exposing (Rule)
 
 config : List Rule
 config =
     [ NoMissingSubscriptionsCall.rule
+    , NoUselessSubscriptions.rule
     ]
 ```
