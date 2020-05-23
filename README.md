@@ -5,7 +5,7 @@ Provides [`elm-review`](https://package.elm-lang.org/packages/jfmengels/elm-revi
 
 ## Provided rules
 
-- [`NoMissingSubscriptionsCall`](https://package.elm-lang.org/packages/jfmengels/review-tea/1.0.0/NoMissingSubscriptionsCall) - Forbids exporting everything from a module.
+- [`NoMissingSubscriptionsCall`](https://package.elm-lang.org/packages/jfmengels/review-tea/1.0.0/NoMissingSubscriptionsCall) - Reports likely missing calls to a `subscriptions` function.
 - [`NoUselessSubscriptions`](https://package.elm-lang.org/packages/jfmengels/review-tea/1.0.0/NoUselessSubscriptions) - Reports `subscriptions` functions that never return a subscription.
 
 

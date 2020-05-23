@@ -17,36 +17,40 @@ import Scope
 import Set exposing (Set)
 
 
-{-| Reports top-level declarations that do not have a type annotation.
-
-Type annotations help you understand what happens in the code, and it will help the compiler give better error messages.
+{-| Reports likely missing calls to a `subscriptions` function.
 
     config =
         [ NoMissingSubscriptionsCall.rule
         ]
 
-TODO
-
 
 ## Fail
 
-    a =
-        1
+    import SomeModule
+
+    update msg model =
+        case msg of
+            UsedMsg subMsg ->
+                SomeModule.update subMsg model.used
+
+    subscriptions model =
+        -- We used `SomeModule.update` but not `SomeModule.subscriptions`
+        Sub.none
+
+This won't fail if `SomeModule` does not define a `subscriptions` function.
 
 
 ## Success
 
-    a : number
-    a =
-        1
+    import SomeModule
 
-    b : number
-    b =
-        let
-            c =
-                2
-        in
-        c
+    update msg model =
+        case msg of
+            UsedMsg subMsg ->
+                SomeModule.update subMsg model.used
+
+    subscriptions model =
+        SomeModule.subscriptions
 
 -}
 rule : Rule
