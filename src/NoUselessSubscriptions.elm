@@ -8,7 +8,7 @@ module NoUselessSubscriptions exposing (rule)
 
 import Elm.Syntax.Declaration as Declaration exposing (Declaration)
 import Elm.Syntax.Expression as Expression
-import Elm.Syntax.Node as Node exposing (Node)
+import Elm.Syntax.Node as Node exposing (Node(..))
 import Review.Rule as Rule exposing (Error, Rule)
 
 
@@ -63,11 +63,19 @@ declarationVisitor declaration =
             then
                 case Node.value function.declaration |> .expression |> Node.value of
                     Expression.FunctionOrValue [ "Sub" ] "none" ->
-                        [ Rule.error
-                            { message = "The `subscription` function never returns any subscriptions"
-                            , details = [ "The `subscription` function never returns any subscriptions. You might as well remove it." ]
-                            }
-                            (Node.value function.declaration |> .expression |> Node.range)
+                        [ error function
+                        ]
+
+                    Expression.Application [ Node _ (Expression.FunctionOrValue [] "always"), Node _ (Expression.FunctionOrValue [ "Sub" ] "none") ] ->
+                        [ error function
+                        ]
+
+                    Expression.Application [ Node _ (Expression.FunctionOrValue [ "Basics" ] "always"), Node _ (Expression.FunctionOrValue [ "Sub" ] "none") ] ->
+                        [ error function
+                        ]
+
+                    Expression.Application [ Node _ (Expression.FunctionOrValue [ "Sub" ] "batch"), Node _ (Expression.ListExpr []) ] ->
+                        [ error function
                         ]
 
                     _ ->
@@ -78,3 +86,12 @@ declarationVisitor declaration =
 
         _ ->
             []
+
+
+error : Expression.Function -> Error {}
+error function =
+    Rule.error
+        { message = "The `subscription` function never returns any subscriptions"
+        , details = [ "The `subscription` function never returns any subscriptions. You might as well remove it." ]
+        }
+        (Node.value function.declaration |> .expression |> Node.range)
