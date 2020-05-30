@@ -196,10 +196,9 @@ finalEvaluation moduleContext =
         |> List.map
             (\( moduleName, range ) ->
                 Rule.error
-                    { message = "Missing subscriptions call"
+                    { message = "Missing subscriptions call to " ++ String.join "." moduleName ++ ".subscriptions"
                     , details =
-                        [ String.join "." moduleName
-                            ++ " defines a `subscriptions` function, which you are not using even though you are using its `update` function. I believe that that is a mistake."
+                        [ "The " ++ String.join "." moduleName ++ " module defines a `subscriptions` function, which you are not using even though you are using its `update` function. This makes me think that you are not subscribing to all the things you should."
                         ]
                     }
                     range

@@ -37,9 +37,9 @@ subscriptions = Debug.todo ""
                     |> Review.Test.expectErrorsForModules
                         [ ( "Main"
                           , [ Review.Test.error
-                                { message = "Missing subscriptions call"
+                                { message = "Missing subscriptions call to Imported.subscriptions"
                                 , details =
-                                    [ "Imported defines a `subscriptions` function, which you are not using even though you are using its `update` function. I believe that that is a mistake."
+                                    [ "The Imported module defines a `subscriptions` function, which you are not using even though you are using its `update` function. This makes me think that you are not subscribing to all the things you should."
                                     ]
                                 , under = "Imported.update"
                                 }
