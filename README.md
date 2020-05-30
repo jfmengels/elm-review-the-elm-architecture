@@ -5,9 +5,9 @@ Provides [`elm-review`](https://package.elm-lang.org/packages/jfmengels/elm-revi
 
 ## Provided rules
 
-- [`NoMissingSubscriptionsCall`](https://package.elm-lang.org/packages/jfmengels/review-tea/1.0.0/NoMissingSubscriptionsCall) - Reports likely missing calls to a `subscriptions` function.
-- [`NoRecursiveUpdate`](https://package.elm-lang.org/packages/jfmengels/review-tea/1.0.0/NoRecursiveUpdate) - Reports recursive calls of an `update` function.
-- [`NoUselessSubscriptions`](https://package.elm-lang.org/packages/jfmengels/review-tea/1.0.0/NoUselessSubscriptions) - Reports `subscriptions` functions that never return a subscription.
+- [`NoMissingSubscriptionsCall`](https://package.elm-lang.org/packages/jfmengels/review-tea/1.1.0/NoMissingSubscriptionsCall) - Reports likely missing calls to a `subscriptions` function.
+- [`NoRecursiveUpdate`](https://package.elm-lang.org/packages/jfmengels/review-tea/1.1.0/NoRecursiveUpdate) - Reports recursive calls of an `update` function.
+- [`NoUselessSubscriptions`](https://package.elm-lang.org/packages/jfmengels/review-tea/1.1.0/NoUselessSubscriptions) - Reports `subscriptions` functions that never return a subscription.
 
 
 ## Configuration
