@@ -21,6 +21,8 @@ import NoUnused.CustomTypeConstructors
 import NoUnused.Dependencies
 import NoUnused.Exports
 import NoUnused.Modules
+import NoUnused.Parameters
+import NoUnused.Patterns
 import NoUnused.Variables
 import Review.Rule as Rule exposing (Rule)
 
@@ -31,12 +33,14 @@ config =
     , NoDebug.TodoOrToString.rule
     , NoExposingEverything.rule
     , NoImportingEverything.rule []
-    , NoMissingTypeAnnotation.rule
     , NoMissingSubscriptionsCall.rule
+    , NoMissingTypeAnnotation.rule
     , NoUnused.CustomTypeConstructors.rule []
     , NoUnused.Dependencies.rule
     , NoUnused.Exports.rule
     , NoUnused.Modules.rule
+    , NoUnused.Parameters.rule
+    , NoUnused.Patterns.rule
     , NoUnused.Variables.rule
     ]
         |> List.map (Rule.ignoreErrorsForFiles [ "src/Scope.elm" ])
