@@ -57,7 +57,7 @@ To add the rule to your configuration:
 You can try this rule out by running the following command:
 
 ```bash
-elm-review --template jfmengels/review-tea/example --rules NoRecursiveUpdate
+elm-review --template jfmengels/elm-review-the-elm-architecture/example --rules NoRecursiveUpdate
 ```
 
 -}

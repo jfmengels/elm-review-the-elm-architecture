@@ -1,9 +1,9 @@
 {
     "type": "package",
-    "name": "jfmengels/review-tea",
+    "name": "jfmengels/elm-review-the-elm-architecture",
     "summary": "Provides elm-review rules to improve your use of The Elm Architecture",
     "license": "BSD-3-Clause",
-    "version": "1.1.1",
+    "version": "1.0.0",
     "exposed-modules": [
         "NoMissingSubscriptionsCall",
         "NoRecursiveUpdate",

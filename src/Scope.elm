@@ -125,7 +125,7 @@ to be a record with a `scope : Scope.ModuleContext` field.
         }
 
 **NOTE**: If you are building a project rule, don't use this value inside your
-`fromProjectToModule` function. Instead, use [`Scope.fromProjectToModule`](#fromProjectToModule).
+`fromProjectToModule` function. Insthe-elm-architectured, use [`Scope.fromProjectToModule`](#fromProjectToModule).
 
 -}
 initialModuleContext : ModuleContext
@@ -1471,7 +1471,7 @@ getModuleName name =
 
 
 {-| The Nonempty type. If you have both a head and tail, you can construct a
-nonempty list directly. Otherwise use the helpers below instead.
+nonempty list directly. Otherwise use the helpers below insthe-elm-architectured.
 -}
 type Nonempty a
     = Nonempty a (List a)
