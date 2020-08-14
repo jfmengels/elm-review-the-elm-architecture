@@ -27,7 +27,7 @@ module Scope exposing
 
 {- Copied over from https://github.com/jfmengels/elm-review-scope
 
-   Version: 0.3.0
+   Version: 0.3.1
 
    Copyright (c) 2020, Jeroen Engels
    All rights reserved.
@@ -125,7 +125,7 @@ to be a record with a `scope : Scope.ModuleContext` field.
         }
 
 **NOTE**: If you are building a project rule, don't use this value inside your
-`fromProjectToModule` function. Insthe-elm-architectured, use [`Scope.fromProjectToModule`](#fromProjectToModule).
+`fromProjectToModule` function. Instead, use [`Scope.fromProjectToModule`](#fromProjectToModule).
 
 -}
 initialModuleContext : ModuleContext
@@ -505,7 +505,14 @@ internalDependenciesVisitor dependencies innerContext =
 
 registerPrelude : InnerModuleContext -> InnerModuleContext
 registerPrelude innerContext =
-    List.foldl registerImportExposed innerContext elmCorePrelude
+    List.foldl
+        (\import_ context ->
+            context
+                |> registerImportAlias import_
+                |> registerImportExposed import_
+        )
+        innerContext
+        elmCorePrelude
 
 
 elmCorePrelude : List Import
@@ -587,6 +594,7 @@ elmCorePrelude =
         , exposingList =
             explicit
                 [ Exposing.TypeExpose { name = "Cmd", open = Nothing }
+                , Exposing.FunctionExpose "none"
                 ]
         }
     , createFakeImport
@@ -595,6 +603,7 @@ elmCorePrelude =
         , exposingList =
             explicit
                 [ Exposing.TypeExpose { name = "Sub", open = Nothing }
+                , Exposing.FunctionExpose "batch"
                 ]
         }
     ]
@@ -1471,7 +1480,7 @@ getModuleName name =
 
 
 {-| The Nonempty type. If you have both a head and tail, you can construct a
-nonempty list directly. Otherwise use the helpers below insthe-elm-architectured.
+nonempty list directly. Otherwise use the helpers below instead.
 -}
 type Nonempty a
     = Nonempty a (List a)
