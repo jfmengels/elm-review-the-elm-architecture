@@ -52,6 +52,15 @@ This won't fail if `SomeModule` does not define a `subscriptions` function.
     subscriptions model =
         SomeModule.subscriptions
 
+
+## Try it out
+
+You can try this rule out by running the following command:
+
+```bash
+elm-review --template jfmengels/elm-review-the-elm-architecture/example --rules NoMissingSubscriptionsCall
+```
+
 -}
 rule : Rule
 rule =
