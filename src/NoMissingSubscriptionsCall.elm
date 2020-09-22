@@ -12,6 +12,7 @@ import Elm.Syntax.Expression as Expression exposing (Expression)
 import Elm.Syntax.ModuleName exposing (ModuleName)
 import Elm.Syntax.Node as Node exposing (Node)
 import Elm.Syntax.Range exposing (Range)
+import Review.ModuleNameLookupTable exposing (ModuleNameLookupTable)
 import Review.Rule as Rule exposing (Error, Rule)
 import Scope
 import Set exposing (Set)
@@ -67,7 +68,7 @@ rule =
     Rule.newProjectRuleSchema "NoMissingSubscriptionsCall" initialProjectContext
         |> Scope.addProjectVisitors
         |> Rule.withModuleVisitor moduleVisitor
-        |> Rule.withModuleContext
+        |> Rule.withModuleContextUsingContextCreator
             { fromProjectToModule = fromProjectToModule
             , fromModuleToProject = fromModuleToProject
             , foldProjectContexts = foldProjectContexts
@@ -91,7 +92,8 @@ type alias ProjectContext =
 
 
 type alias ModuleContext =
-    { scope : Scope.ModuleContext
+    { lookupTable : ModuleNameLookupTable
+    , scope : Scope.ModuleContext
     , modulesThatExposeSubscriptionsAndUpdate : Set ModuleName
     , definesUpdate : Bool
     , definesSubscriptions : Bool
@@ -107,27 +109,36 @@ initialProjectContext =
     }
 
 
-fromProjectToModule : Rule.ModuleKey -> Node ModuleName -> ProjectContext -> ModuleContext
-fromProjectToModule _ _ projectContext =
-    { scope = Scope.fromProjectToModule projectContext.scope
-    , modulesThatExposeSubscriptionsAndUpdate = projectContext.modulesThatExposeSubscriptionsAndUpdate
-    , definesUpdate = False
-    , definesSubscriptions = False
-    , usesUpdateOfModule = Dict.empty
-    , usesSubscriptionsOfModule = Set.empty
-    }
+fromProjectToModule : Rule.ContextCreator ProjectContext ModuleContext
+fromProjectToModule =
+    Rule.initContextCreator
+        (\lookupTable projectContext ->
+            { lookupTable = lookupTable
+            , scope = Scope.fromProjectToModule projectContext.scope
+            , modulesThatExposeSubscriptionsAndUpdate = projectContext.modulesThatExposeSubscriptionsAndUpdate
+            , definesUpdate = False
+            , definesSubscriptions = False
+            , usesUpdateOfModule = Dict.empty
+            , usesSubscriptionsOfModule = Set.empty
+            }
+        )
+        |> Rule.withModuleNameLookupTable
 
 
-fromModuleToProject : Rule.ModuleKey -> Node ModuleName -> ModuleContext -> ProjectContext
-fromModuleToProject _ moduleName moduleContext =
-    { scope = Scope.fromModuleToProject moduleName moduleContext.scope
-    , modulesThatExposeSubscriptionsAndUpdate =
-        if moduleContext.definesSubscriptions && moduleContext.definesUpdate then
-            Set.singleton (Node.value moduleName)
+fromModuleToProject : Rule.ContextCreator ModuleContext ProjectContext
+fromModuleToProject =
+    Rule.initContextCreator
+        (\metadata moduleContext ->
+            { scope = Scope.fromModuleToProject (Rule.moduleNameNodeFromMetadata metadata) moduleContext.scope
+            , modulesThatExposeSubscriptionsAndUpdate =
+                if moduleContext.definesSubscriptions && moduleContext.definesUpdate then
+                    Set.singleton (Rule.moduleNameFromMetadata metadata)
 
-        else
-            Set.empty
-    }
+                else
+                    Set.empty
+            }
+        )
+        |> Rule.withMetadata
 
 
 foldProjectContexts : ProjectContext -> ProjectContext -> ProjectContext
