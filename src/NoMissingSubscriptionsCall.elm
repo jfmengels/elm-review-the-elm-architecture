@@ -93,9 +93,6 @@ type alias ProjectContext =
 type alias ModuleContext =
     { scope : Scope.ModuleContext
     , modulesThatExposeSubscriptionsAndUpdate : Set ModuleName
-
-    --, usesUpdate : Bool
-    --, usesSubscription : Bool
     , definesUpdate : Bool
     , definesSubscriptions : Bool
     , usesUpdateOfModule : Dict ModuleName Range
