@@ -14,7 +14,6 @@ import Elm.Syntax.Node as Node exposing (Node)
 import Elm.Syntax.Range exposing (Range)
 import Review.ModuleNameLookupTable as ModuleNameLookupTable exposing (ModuleNameLookupTable)
 import Review.Rule as Rule exposing (Error, Rule)
-import Scope
 import Set exposing (Set)
 
 
@@ -66,7 +65,6 @@ elm-review --template jfmengels/elm-review-the-elm-architecture/example --rules 
 rule : Rule
 rule =
     Rule.newProjectRuleSchema "NoMissingSubscriptionsCall" initialProjectContext
-        |> Scope.addProjectVisitors
         |> Rule.withModuleVisitor moduleVisitor
         |> Rule.withModuleContextUsingContextCreator
             { fromProjectToModule = fromProjectToModule
@@ -86,14 +84,12 @@ moduleVisitor schema =
 
 
 type alias ProjectContext =
-    { scope : Scope.ProjectContext
-    , modulesThatExposeSubscriptionsAndUpdate : Set ModuleName
+    { modulesThatExposeSubscriptionsAndUpdate : Set ModuleName
     }
 
 
 type alias ModuleContext =
     { lookupTable : ModuleNameLookupTable
-    , scope : Scope.ModuleContext
     , modulesThatExposeSubscriptionsAndUpdate : Set ModuleName
     , definesUpdate : Bool
     , definesSubscriptions : Bool
@@ -104,8 +100,7 @@ type alias ModuleContext =
 
 initialProjectContext : ProjectContext
 initialProjectContext =
-    { scope = Scope.initialProjectContext
-    , modulesThatExposeSubscriptionsAndUpdate = Set.empty
+    { modulesThatExposeSubscriptionsAndUpdate = Set.empty
     }
 
 
@@ -114,7 +109,6 @@ fromProjectToModule =
     Rule.initContextCreator
         (\lookupTable projectContext ->
             { lookupTable = lookupTable
-            , scope = Scope.fromProjectToModule projectContext.scope
             , modulesThatExposeSubscriptionsAndUpdate = projectContext.modulesThatExposeSubscriptionsAndUpdate
             , definesUpdate = False
             , definesSubscriptions = False
@@ -129,8 +123,7 @@ fromModuleToProject : Rule.ContextCreator ModuleContext ProjectContext
 fromModuleToProject =
     Rule.initContextCreator
         (\metadata moduleContext ->
-            { scope = Scope.fromModuleToProject (Rule.moduleNameNodeFromMetadata metadata) moduleContext.scope
-            , modulesThatExposeSubscriptionsAndUpdate =
+            { modulesThatExposeSubscriptionsAndUpdate =
                 if moduleContext.definesSubscriptions && moduleContext.definesUpdate then
                     Set.singleton (Rule.moduleNameFromMetadata metadata)
 
@@ -143,8 +136,7 @@ fromModuleToProject =
 
 foldProjectContexts : ProjectContext -> ProjectContext -> ProjectContext
 foldProjectContexts newContext previousContext =
-    { scope = Scope.foldProjectContexts newContext.scope previousContext.scope
-    , modulesThatExposeSubscriptionsAndUpdate =
+    { modulesThatExposeSubscriptionsAndUpdate =
         Set.union
             newContext.modulesThatExposeSubscriptionsAndUpdate
             previousContext.modulesThatExposeSubscriptionsAndUpdate
