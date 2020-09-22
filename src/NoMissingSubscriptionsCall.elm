@@ -12,7 +12,7 @@ import Elm.Syntax.Expression as Expression exposing (Expression)
 import Elm.Syntax.ModuleName exposing (ModuleName)
 import Elm.Syntax.Node as Node exposing (Node)
 import Elm.Syntax.Range exposing (Range)
-import Review.ModuleNameLookupTable exposing (ModuleNameLookupTable)
+import Review.ModuleNameLookupTable as ModuleNameLookupTable exposing (ModuleNameLookupTable)
 import Review.Rule as Rule exposing (Error, Rule)
 import Scope
 import Set exposing (Set)
@@ -178,16 +178,16 @@ expressionVisitor : Node Expression -> ModuleContext -> ( List (Error {}), Modul
 expressionVisitor node moduleContext =
     case Node.value node of
         Expression.FunctionOrValue moduleName "update" ->
-            let
-                realModuleName : List String
-                realModuleName =
-                    Scope.moduleNameForValue moduleContext.scope "update" moduleName
-            in
-            if Set.member realModuleName moduleContext.modulesThatExposeSubscriptionsAndUpdate then
-                ( [], { moduleContext | usesUpdateOfModule = Dict.insert realModuleName (Node.range node) moduleContext.usesUpdateOfModule } )
+            case ModuleNameLookupTable.moduleNameFor moduleContext.lookupTable node of
+                Just realModuleName ->
+                    if Set.member realModuleName moduleContext.modulesThatExposeSubscriptionsAndUpdate then
+                        ( [], { moduleContext | usesUpdateOfModule = Dict.insert realModuleName (Node.range node) moduleContext.usesUpdateOfModule } )
 
-            else
-                ( [], moduleContext )
+                    else
+                        ( [], moduleContext )
+
+                Nothing ->
+                    ( [], moduleContext )
 
         Expression.FunctionOrValue moduleName "subscriptions" ->
             let
