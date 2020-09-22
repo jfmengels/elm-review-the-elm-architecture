@@ -177,11 +177,11 @@ declarationVisitor node moduleContext =
 expressionVisitor : Node Expression -> ModuleContext -> ( List (Error {}), ModuleContext )
 expressionVisitor node moduleContext =
     case Node.value node of
-        Expression.FunctionOrValue moduleName "update" ->
+        Expression.FunctionOrValue _ "update" ->
             case ModuleNameLookupTable.moduleNameFor moduleContext.lookupTable node of
-                Just realModuleName ->
-                    if Set.member realModuleName moduleContext.modulesThatExposeSubscriptionsAndUpdate then
-                        ( [], { moduleContext | usesUpdateOfModule = Dict.insert realModuleName (Node.range node) moduleContext.usesUpdateOfModule } )
+                Just moduleName ->
+                    if Set.member moduleName moduleContext.modulesThatExposeSubscriptionsAndUpdate then
+                        ( [], { moduleContext | usesUpdateOfModule = Dict.insert moduleName (Node.range node) moduleContext.usesUpdateOfModule } )
 
                     else
                         ( [], moduleContext )
@@ -189,17 +189,17 @@ expressionVisitor node moduleContext =
                 Nothing ->
                     ( [], moduleContext )
 
-        Expression.FunctionOrValue moduleName "subscriptions" ->
-            let
-                realModuleName : List String
-                realModuleName =
-                    Scope.moduleNameForValue moduleContext.scope "subscriptions" moduleName
-            in
-            if Set.member realModuleName moduleContext.modulesThatExposeSubscriptionsAndUpdate then
-                ( [], { moduleContext | usesSubscriptionsOfModule = Set.insert realModuleName moduleContext.usesSubscriptionsOfModule } )
+        Expression.FunctionOrValue _ "subscriptions" ->
+            case ModuleNameLookupTable.moduleNameFor moduleContext.lookupTable node of
+                Just moduleName ->
+                    if Set.member moduleName moduleContext.modulesThatExposeSubscriptionsAndUpdate then
+                        ( [], { moduleContext | usesSubscriptionsOfModule = Set.insert moduleName moduleContext.usesSubscriptionsOfModule } )
 
-            else
-                ( [], moduleContext )
+                    else
+                        ( [], moduleContext )
+
+                Nothing ->
+                    ( [], moduleContext )
 
         _ ->
             ( [], moduleContext )
